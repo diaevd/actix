@@ -153,7 +153,8 @@ where
             match self.msgs.poll() {
                 Ok(Async::Ready(Some(msg))) => {
                     if let Some(ref queue) = self.queue {
-                        queue.send(msg).is_ok();
+                        // #[warn(unused_must_use)]
+                        let _ = queue.send(msg).is_ok(); // TODO: check result
                     }
                 }
                 Ok(Async::NotReady) => break,
@@ -220,14 +221,14 @@ where
     queue: cb_channel::Receiver<Envelope<A>>,
     stopping: bool,
     state: ActorState,
-    factory: Arc<Fn() -> A>,
+    factory: Arc<dyn Fn() -> A>,
 }
 
 impl<A> SyncContext<A>
 where
     A: Actor<Context = Self>,
 {
-    fn new(factory: Arc<Fn() -> A>, queue: cb_channel::Receiver<Envelope<A>>) -> Self {
+    fn new(factory: Arc<dyn Fn() -> A>, queue: cb_channel::Receiver<Envelope<A>>) -> Self {
         let act = factory();
         Self {
             queue,
