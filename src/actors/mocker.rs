@@ -37,10 +37,12 @@ use crate::prelude::*;
 /// the actor.
 pub struct Mocker<T: Sized + 'static> {
     phantom: PhantomData<T>,
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     mock: Box<dyn FnMut(Box<dyn Any>, &mut Context<Mocker<T>>) -> Box<dyn Any>>,
 }
 
 impl<T> Mocker<T> {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     pub fn mock(
         mock: Box<dyn FnMut(Box<dyn Any>, &mut Context<Mocker<T>>) -> Box<dyn Any>>,
     ) -> Mocker<T> {
